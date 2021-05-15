@@ -10,8 +10,8 @@ A4_WIDTH = 2894
 A4_HEIGHT = 4093
 
 # 画像を何行何列にするか
-IMAGE_COLUMN = 6  # 列
-IMAGE_ROW = 6  # 行
+IMAGE_COLUMN = 8  # 列
+IMAGE_ROW = 8  # 行
 SCALE = 0.3
 IMAGE_SIZE = 640
 
@@ -51,6 +51,9 @@ def main():
         image_url = track["track"]["album"]["images"][0]["url"]
         album_name = track["track"]["album"]["name"]
         artists = track["track"]["artists"]
+
+        album_name = album_name.replace("/", "")
+
         album_names.append(album_name)
 
         print("============================")
@@ -62,6 +65,8 @@ def main():
         album_image = album_image.resize((resized_image_size, resized_image_size))
         album_image.save(f"./images/{album_name}.jpg")
 
+    # 重複を除く
+    album_names = list(set(album_names))
     random_image_name_list = _create_random_image_name_list(album_names, IMAGE_COLUMN * IMAGE_ROW)
 
     index = 0
