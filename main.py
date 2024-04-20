@@ -33,9 +33,9 @@ def main(args):
     sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 
     playlists = sp.current_user_playlists()["items"]
-    print("ID, playlist name, playlist id")
+    print("ID, playlist name")
     for i, playlist in enumerate(playlists):
-        print(f"{i}, {playlist['name']}, {playlist['id']}")
+        print(f"{i}, {playlist['name']}")
 
     if args.render_id is None:
         return
