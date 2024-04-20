@@ -1,17 +1,15 @@
+import argparse
+import os
 from random import sample
 
 import requests
 import spotipy
 from PIL import Image
 from spotipy.oauth2 import SpotifyOAuth
-from pprint import pprint
-
-A4_WIDTH = 2894
-A4_HEIGHT = 4093
 
 # 画像を何行何列にするか
-IMAGE_COLUMN = 8  # 列
-IMAGE_ROW = 8  # 行
+IMAGE_COLUMN = 6  # 列
+IMAGE_ROW = 6  # 行
 SCALE = 0.3
 IMAGE_SIZE = 640
 
@@ -28,7 +26,9 @@ def _create_random_image_name_list(image_names, num):
                 return random_image_name_list
 
 
-def main():
+def main(args):
+    os.makedirs("./images", exist_ok=True)
+
     scope = "user-library-read"
     sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 
@@ -36,6 +36,9 @@ def main():
     print("ID, playlist name, playlist id")
     for i, playlist in enumerate(playlists):
         print(f"{i}, {playlist['name']}, {playlist['id']}")
+
+    if args.render_id is None:
+        return
 
     resized_image_size = int(IMAGE_SIZE * SCALE)
 
@@ -45,7 +48,7 @@ def main():
     canvas = Image.new("RGBA", (canvas_width, canvas_height), color="#ffffff")
     album_names = []
 
-    tracks = sp.playlist("")["tracks"]["items"]
+    tracks = sp.playlist(playlists[args.render_id]["id"])["tracks"]["items"]
     for track in tracks:
         track_name = track["track"]["name"]
         image_url = track["track"]["album"]["images"][0]["url"]
@@ -83,4 +86,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--render_id', help='render jacket art wall with the specified id', type=int)
+    args = parser.parse_args()  
+
+    main(args)
